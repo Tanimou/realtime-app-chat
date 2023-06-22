@@ -5,12 +5,12 @@ import { ButtonHTMLAttributes, FC } from 'react'
 
 
 
-const buttonVariants = cva(
-  'active:scale-95 inline-flex items-center justify-center rounded-full text-sm font-medium transition-color focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled: pointer-events-none',
+export const buttonVariants = cva(
+  'active:scale-95 inline-flex items-center justify-center rounded-full text-sm font-medium transition-color focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50',
   {
     variants: {
       variant: {
-              default: 'bg-indigo-600 hover:bg-indigo-700 text-white',
+              default: 'bg-indigo-600 hover:bg-slate-700 text-white',
               ghost: 'bg-transparent hover:bg-gray-50 hover:text-gray-700'
 
       },
@@ -31,11 +31,11 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, Va
   isLoading?: boolean
 }
 
-const Button: FC<ButtonProps> = ({className, children,variant,isLoading,sizes,...props }) => {
-  return <button className={cn(buttonVariants({variant,sizes,className}))} disabled={isLoading} {...props}>
+const Button: FC<ButtonProps> = ({className, children,variant, isLoading,sizes,...props }) => {
+  return (<button className={cn(buttonVariants({variant,sizes,className}))} disabled={isLoading} {...props}>
     {isLoading ? <Loader2 className='mr-2 h-4 w-4 animate-spin' /> : null}
     {children}
-  </button>
+  </button>)
 }
 
 export default Button
