@@ -15,9 +15,11 @@ const page: FC<pageProps> = ({ }) => {
     const loginWithGoogle = async () => { 
         setIsLoading(true)
         try {
+            
             await signIn('google', { callbackUrl: '/' })
         } catch (error) {
             toast.error("Something went wrong. Please try again.")
+          
         
         } finally {
             setIsLoading(false)
