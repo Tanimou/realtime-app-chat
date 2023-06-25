@@ -1,3 +1,4 @@
+// This file exports a layout component that provides a sidebar navigation menu and user profile information for the dashboard page of the Realtime Chat app. It also checks for user authentication using Next.js' getServerSession function and fetches the user's incoming friend requests from Redis using the fetchRedis helper function.
 import { ReactNode } from 'react'
 import { LayoutProps } from '../../../.next/types/app/layout';
 import { getServerSession } from 'next-auth';

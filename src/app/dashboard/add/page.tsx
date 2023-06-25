@@ -1,3 +1,8 @@
+/**
+ * This file contains the page component for adding a friend in the dashboard section of the application.
+ * It imports the AddFriendButton component and renders it along with a heading.
+ */
+
 import AddFriendButton from '@/components/AddFriendButton'
 import { FC } from 'react'
 

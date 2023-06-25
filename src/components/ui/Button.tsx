@@ -1,3 +1,8 @@
+/**
+ * This file exports a reusable Button component that can be used throughout the application.
+ * It supports different variants and sizes, and can display a loading spinner when isLoading prop is true.
+ * The component uses class-variance-authority library to generate class names based on the props passed to it.
+ */
 import { cn } from '@/lib/utils'
 import { cva, VariantProps } from 'class-variance-authority'
 import { Loader2 } from 'lucide-react'

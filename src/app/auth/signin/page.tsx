@@ -1,3 +1,4 @@
+// This file contains the Sign In page component for the authentication feature of the Realtime Chat app. It allows users to sign in to their account using their Google credentials, and displays a loading state while the sign in process is in progress.
 "use client"
 
 import Button from '@/components/ui/Button'
@@ -10,20 +11,20 @@ interface pageProps {
 }
 
 const page: FC<pageProps> = ({ }) => {
+
+    // Define a state variable isLoading and initialize it to false
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
+    // Define a function loginWithGoogle that sets isLoading to true, tries to sign in with Google using next-auth, and sets isLoading to false when done.
     const loginWithGoogle = async () => { 
-        setIsLoading(true)
-        try {
-            
-            await signIn('google', { callbackUrl: '/' })
-        } catch (error) {
-            toast.error("Something went wrong. Please try again.")
-          
-        
-        } finally {
-            setIsLoading(false)
-        }
+      setIsLoading(true)
+      try {
+        await signIn('google', { callbackUrl: '/' })
+      } catch (error) {
+        toast.error("Something went wrong. Please try again.")
+      } finally {
+        setIsLoading(false)
+      }
     }
 
     return (

@@ -1,3 +1,7 @@
+// This file exports a React component called FriendRequestSidebarOption that displays a link to the user's friend requests page. 
+// It also displays the number of unseen friend requests, 
+// if any.The component takes in two props: initialUnseenRequestCount(the initial number of unseen friend requests) 
+// and sessionId(the user's session ID).
 "use client"
 
 import { User } from 'lucide-react'
