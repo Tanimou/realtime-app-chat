@@ -1,4 +1,7 @@
-// This file exports a layout component that provides a sidebar navigation menu and user profile information for the dashboard page of the Realtime Chat app. It also checks for user authentication using Next.js' getServerSession function and fetches the user's incoming friend requests from Redis using the fetchRedis helper function.
+// This file exports a layout component that provides a sidebar navigation menu 
+// and user profile information for the dashboard page of the Realtime Chat app.
+// It also checks for user authentication using Next.js' getServerSession function and fetches the user's incoming friend requests 
+// from Redis using the fetchRedis helper function.
 import { ReactNode } from 'react'
 import { LayoutProps } from '../../../.next/types/app/layout';
 import { getServerSession } from 'next-auth';
@@ -10,6 +13,8 @@ import { Icon, Icons } from '@/components/icons';
 import SignOutButton from '@/components/SignOutButton';
 import FriendRequestSidebarOption from '@/components/FriendRequestSidebarOption';
 import { fetchRedis } from '@/helpers/redis';
+import { getFriendsByUserId } from '@/helpers/get-friends-by-user-id';
+import SidebarChatList from '@/components/SidebarChatList';
 
 interface layoutProps {
     children: ReactNode
@@ -36,20 +41,23 @@ const sidebarOptions: SidebarOption[] = [
 const layout = async ({ children }: LayoutProps) => {
     const session = await getServerSession(authOptions)
     if (!session) notFound()
-    const unseenRequestCount = (await fetchRedis('smembers',`user:${session.user.id}:incoming_friend_requests`) as User[]).length
+
+    const friends = await getFriendsByUserId(session.user.id)
+
+    const unseenRequestCount = (await fetchRedis('smembers', `user:${session.user.id}:incoming_friend_requests`) as User[]).length
     return (
         <div className="w-full flex h-screen">
             <div className="flex h-full w-full max-w-xs grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
                 <Link href="/dashboard" className="flex h-16 shrink-0 items-center">
                     <Icons.Logo className="h-8 w-auto text-indigo-600" />
                 </Link>
-                <div className="text-xs font-semibold leading-6 text-gray-400">
+                {friends.length > 0 && <div className="text-xs font-semibold leading-6 text-gray-400">
                     Your chats
-                </div>
+                </div>}
                 <nav className='flex flex-1 flex-col'>
                     <ul role='list' className='flex flex-1 flex-col gap-y-7'>
                         <li>
-
+                            <SidebarChatList sessionId={session.user.id} friends={friends} />
                         </li>
                         <li>
                             <div className='text-xs font-semibold leading-6 text-gray-400'>
@@ -69,10 +77,10 @@ const layout = async ({ children }: LayoutProps) => {
                                         </li>
                                     )
                                 })}
+                                <li>
+                                    <FriendRequestSidebarOption sessionId={session.user.id} initialUnseenRequestCount={unseenRequestCount} />
+                                </li>
                             </ul>
-                        </li>
-                        <li>
-                            <FriendRequestSidebarOption sessionId={session.user.id} initialUnseenRequestCount={unseenRequestCount}/>
                         </li>
                         <li className='-mx-6 mt-auto flex items-center'>
                             <div className='flex flex-1 items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-gray-900'>
@@ -81,7 +89,7 @@ const layout = async ({ children }: LayoutProps) => {
                                         fill
                                         referrerPolicy='no-referrer'
                                         className='rounded-full'
-                                        src={ session.user.image|| ''}
+                                        src={session.user.image || ''}
                                         alt=''
                                     />
                                 </div>
@@ -91,7 +99,7 @@ const layout = async ({ children }: LayoutProps) => {
                                     <span className='text-xs text-zinc-400' aria-hidden='true'>{session.user.email}</span>
                                 </div>
                             </div>
-                            <SignOutButton className='h-full aspect-square'/>
+                            <SignOutButton className='h-full aspect-square' />
                         </li>
                     </ul>
                 </nav>
