@@ -3,7 +3,7 @@
 // It also checks for user authentication using Next.js' getServerSession function and fetches the user's incoming friend requests 
 // from Redis using the fetchRedis helper function.
 import { ReactNode } from 'react'
-import { LayoutProps } from '../../../.next/types/app/layout';
+
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { notFound } from 'next/navigation';
@@ -38,7 +38,7 @@ const sidebarOptions: SidebarOption[] = [
 
 
 
-const layout = async ({ children }: LayoutProps) => {
+const layout = async ({ children }: layoutProps) => {
     const session = await getServerSession(authOptions)
     if (!session) notFound()
 
