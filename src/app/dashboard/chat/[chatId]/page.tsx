@@ -1,3 +1,5 @@
+// "use client"
+
 import { fetchRedis } from '@/helpers/redis'
 // import { Message } from '@/lib/validations/message'
 import { messageArrayValidator } from '@/lib/validations/message'
@@ -7,6 +9,9 @@ import Image from 'next/image'
 import Messages from '@/components/Messages'
 import ChatInput from '@/components/ChatInput'
 import { authOptions } from '@/lib/auth'
+// import { useEffect } from 'react'
+// import { pusherClient } from '@/lib/pusher'
+// import { toPusherKey } from '@/lib/utils'
 
 interface pageProps {
   params: {
@@ -14,6 +19,9 @@ interface pageProps {
   }
 }
 
+interface ExtendedUser extends User {
+isOnline:boolean
+}
 
 
 async function getChatMessages(chatId: string) {
@@ -30,7 +38,7 @@ async function getChatMessages(chatId: string) {
   }
 }
 
-const page = async ({ params }: pageProps) => {
+const Page = async ({ params }: pageProps) => {
   const { chatId } = params
   const session = await getServerSession(authOptions)
   if (!session) notFound()
@@ -48,8 +56,19 @@ const page = async ({ params }: pageProps) => {
     'get',
     `user:${chatPartnerId}`
   )) as string
-  const chatPartner = JSON.parse(chatPartnerRaw) as User
+  const chatPartner = JSON.parse(chatPartnerRaw) as ExtendedUser
   const initialMessages = await getChatMessages(chatId)
+  chatPartner.isOnline = true 
+  // useEffect(() => {
+  //   pusherClient.subscribe(toPusherKey(`user:${chatId}:presence_channel`)) 
+  //   const setChatPartner = (chatPartner:User) => { 
+  //   chatPartner.isOnline = true
+  //   } 
+  //   pusherClient.bind("pusher:subscription_succeeded", setChatPartner);
+
+    
+  // }, [chatId])
+  
 
   return <div className='flex-1 justify-between flex flex-col h-full max-h-[calc(100vh-6rem)]'>
     <div className="flex sm:items-center justify-between py-3 border-b-2 border-gray-200">
@@ -68,19 +87,27 @@ const page = async ({ params }: pageProps) => {
         <div className='flex flex-col leading-tight'>
           <div className='text-xl flex items-center'>
             <span className='text-gray-700 mr-3 font-semibold'>{chatPartner.name} </span>
-            {/* {chatPartner.isOnline ? (
-            <span className='h-2 w-2 bg-green-500 rounded-full'></span>
+            {chatPartner.isOnline ? (
+            <span className='h-2 w-2 relative'>
+              <span className='absolute top-0 left-0 h-2 w-2 bg-green-500 rounded-full animate-ping'></span>
+              <span className='absolute top-0 left-0 h-2 w-2 bg-green-500 rounded-full animate-pulse'></span>
+            </span>
           ) : (
-            <span className='h-2 w-2 bg-red-500 rounded-full'></span>
-          )} */}
+            <span className='h-2 w-2 bg-red-500 rounded-full animate-pulse'></span>
+          )}
           </div>
           <span className='text-sm text-gray-600'>{chatPartner.email} </span>
         </div>
       </div>
     </div>
-    <Messages initialMessages={initialMessages} sessionImg={session.user.image} sessionId={session.user.id} chatPartner={chatPartner}/>
+    <Messages
+      initialMessages={initialMessages}
+      sessionImg={session.user.image}
+      sessionId={session.user.id}
+      chatPartner={chatPartner}
+      chatId={ chatId} />
     <ChatInput chatId={chatId} />
   </div>
 }
 
-export default page
+export default Page

@@ -10,12 +10,16 @@ import { fetchRedis } from "./redis";
  * @param userId The ID of the user to retrieve friends for.
  * @returns A Promise that resolves to an array of User objects representing the user's friends.
  */
+
+interface ExtendedUser extends User {
+    isOnline: boolean
+}
 export const getFriendsByUserId = async (userId: string) => {
     const friendIds = await fetchRedis("smembers", `user:${userId}:friends`) as string[]
 
     return await Promise.all(
             friendIds.map(async (friendId: string) => {
-            return JSON.parse(await fetchRedis('get',`user:${friendId}`) as string) as User
+            return JSON.parse(await fetchRedis('get',`user:${friendId}`) as string) as ExtendedUser
             })
         );
     }

@@ -16,6 +16,7 @@ interface Message {
     senderId: string;
     receiverId: string;
     timestamp: number;
+    text:string
 
 }
 

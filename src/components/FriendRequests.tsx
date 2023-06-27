@@ -4,10 +4,12 @@
 
 import { X } from 'lucide-react'
 import { Check, UserPlus } from 'lucide-react'
-import { FC, useState } from 'react'
+import { FC, useState, useEffect } from 'react'
 import Image from 'next/image'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
+import { pusherClient } from '@/lib/pusher'
+import { toPusherKey } from '@/lib/utils'
 
 interface FriendRequestsProps {
     incomingFriendRequests: IncomingFriendRequest[]
@@ -19,6 +21,26 @@ const FriendRequests: FC<FriendRequestsProps> = ({ incomingFriendRequests, sessi
     const [friendRequests, setFriendRequests] = useState<IncomingFriendRequest[]>(
         incomingFriendRequests
     )
+
+    // This useEffect hook subscribes to the incoming_friend_requests channel on Pusher when the component mounts.
+    // It also binds a handler function to the incoming_friend_requests event.
+    // When the component unmounts, it unsubscribes from the channel and unbinds the handler function.
+    useEffect(() => {
+        pusherClient.subscribe(toPusherKey(`user:${sessionId}:incoming_friend_requests`)) // Subscribe to the incoming_friend_requests channel on Pusher.
+
+        const friendRequestsHandler = ({senderId,senderEmail,senderName,senderImage}:IncomingFriendRequest) => { // Define a handler function for the incoming_friend_requests event.
+            setFriendRequests((prev) => [...prev, { senderId, senderEmail, senderName, senderImage }]) // Add the new request to the friendRequests state.
+        } 
+
+        pusherClient.bind('incoming_friend_requests', friendRequestsHandler) // Bind the handler function to the incoming_friend_requests event.
+
+        return () => { 
+            pusherClient.unsubscribe(toPusherKey(`user:${sessionId}:incoming_friend_requests`)) // Unsubscribe from the incoming_friend_requests channel on Pusher.
+            pusherClient.unbind('incoming_friend_requests', friendRequestsHandler) // Unbind the handler function from the incoming_friend_requests event.
+        }
+    }, [sessionId])
+
+    
 
     // This function accepts a friend request by sending a POST request to the server with the senderId.
     // It then updates the friendRequests state by removing the request with the given senderId and refreshes the page.
