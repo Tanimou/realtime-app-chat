@@ -19,6 +19,22 @@ import  GoogleProvider  from "next-auth/providers/google";
 import { fetchRedis } from "@/helpers/redis";
 
 // Defining authOptions as a NextAuthOptions object
+
+function getGoogleCredentials() {
+    const clientId = process.env.GOOGLE_CLIENT_ID
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET
+
+    if (!clientId || clientId.length === 0) {
+        throw new Error('Missing GOOGLE_CLIENT_ID')
+    }
+
+    if (!clientSecret || clientSecret.length === 0) {
+        throw new Error('Missing GOOGLE_CLIENT_SECRET')
+    }
+
+    return { clientId, clientSecret }
+}
+
 export const authOptions: NextAuthOptions = {
     // Using UpstashRedisAdapter as the adapter
     adapter: UpstashRedisAdapter(database),
@@ -33,11 +49,13 @@ export const authOptions: NextAuthOptions = {
         signIn: "/auth/signin",
     },
 
+
+    
     // Defining the Google provider
     providers: [
         GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            clientId: getGoogleCredentials().clientId,
+            clientSecret: getGoogleCredentials().clientSecret,
         })
     ],
 
