@@ -8,9 +8,7 @@ import { pusherClient } from '@/lib/pusher'
 import toast from 'react-hot-toast'
 import UnseenChatToast from './UnseenChatToast'
 
-interface ExtendedUser extends User {
-    isOnline: boolean
-}
+
 
 interface SidebarChatListProps {
     friends: ExtendedUser[]
@@ -82,6 +80,7 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }: Sideb
 
     return (<ul role="list" className='max-h-[25rem] overflow-y-auto -mx-2 space-y-1'>
         {friends.sort().map((friend) => {
+            friend.isOnline=true
             const unseenMessagesCount = unseenMessages.filter((message) => message.senderId === friend.id).length
             return <li key={friend.id}>
                 <a href={`/dashboard/chat/${chatHrefConstructor(sessionId, friend.id)}`} className='text-gray-700 hover:text-indigo-600 hover:bg-gray-50 flex group items-center gap-x-3 rounded-full p-2 text-sm leading-6 font-semibold'>
@@ -104,6 +103,7 @@ const SidebarChatList: FC<SidebarChatListProps> = ({ friends, sessionId }: Sideb
                             <span className='absolute top-0 left-0 h-2 w-2 bg-green-500 rounded-full animate-ping'></span>
                             <span className='absolute top-0 left-0 h-2 w-2 bg-green-500 rounded-full animate-pulse'></span>
                         </span>
+                
                     ) : (
                         <span className='h-2 w-2 bg-red-500 rounded-full animate-pulse'></span>
                     )}

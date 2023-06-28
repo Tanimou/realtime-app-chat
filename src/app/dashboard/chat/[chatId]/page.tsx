@@ -19,9 +19,7 @@ interface pageProps {
   }
 }
 
-interface ExtendedUser extends User {
-isOnline:boolean
-}
+
 
 
 async function getChatMessages(chatId: string) {

@@ -6,6 +6,9 @@ interface User {
 
 }
 
+interface ExtendedUser extends User{
+    isOnline:boolean
+}
 interface Chat{
     id: string
     messages: Message[]
