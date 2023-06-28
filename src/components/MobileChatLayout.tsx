@@ -1,3 +1,9 @@
+//The MobileChatLayout.tsx file exports a React functional component that renders a mobile chat layout.
+//It takes in several props such as friends, session, sidebarOptions,
+//and unseenRequestCount.The component renders a header with a logo and a menu button that opens a dialog
+//with a list of chat options.It also renders a list of chat options and a list of friends to chat with.
+//The component uses several third - party libraries such as @headlessui/react, lucide-react, and next/image.
+
 'use client'
 
 import { Transition, Dialog } from '@headlessui/react'
