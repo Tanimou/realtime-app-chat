@@ -6,6 +6,7 @@ import { cn, toPusherKey } from '@/lib/utils'
 import { format } from 'date-fns'
 import Image from 'next/image'
 import { pusherClient } from '@/lib/pusher'
+import { useRouter } from 'next/navigation'
 
 interface MessagesProps {
   initialMessages: Message[]
@@ -21,15 +22,16 @@ const Messages: FC<MessagesProps> = ({ initialMessages,sessionId,chatPartner, se
         useEffect(() => {
         pusherClient.subscribe(toPusherKey(`chat:${chatId}`)) // Subscribe to the incoming_friend_requests channel on Pusher.
 
-        const messageHandler = (message:Message) => { // Define a handler function for the incoming_friend_requests event.
-            setMessages((prev) => [message,...prev]) // Add the new request to the friendRequests state.
+        const MessageHandler = (message:Message) => { // Define a handler function for the incoming_friend_requests event.
+            setMessages((prev) => [message, ...prev]) // Add the new request to the friendRequests state.
+            useRouter().refresh()
         } 
 
-        pusherClient.bind('incoming_message', messageHandler) // Bind the handler function to the incoming_message event.
+        pusherClient.bind('incoming_message', MessageHandler) // Bind the handler function to the incoming_message event.
 
         return () => { 
             pusherClient.unsubscribe(toPusherKey(`chat:${chatId}`)) // Unsubscribe from the incoming_message channel on Pusher.
-            pusherClient.unbind('incoming_message', messageHandler) // Unbind the handler function from the incoming_friend_requests event.
+            pusherClient.unbind('incoming_message', MessageHandler) // Unbind the handler function from the incoming_friend_requests event.
         }
         }, [chatId])
     
